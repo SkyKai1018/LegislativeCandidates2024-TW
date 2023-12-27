@@ -83,12 +83,17 @@
         // 点击事件
         layer.on("click", function (e) {
           // 这里您可以根据 'feature' 的属性自定义弹窗内容
-          console.log(feature)
-          var popupContent = `<h3>${feature.properties.county} ${feature.properties.constituency}</h3>`;
-          if (feature.properties) {
-            popupContent += feature.properties.county; // 示例属性
-            popupContent += feature.properties.constituency; // 示例属性
-          }
+          var popupContent = `<h2>${feature.properties.county} 第${feature.properties.constituency}選區</h2>`;
+          popupContent += '<h3>候選人</h3>'
+          popupContent +="<ul>"
+          console.log(feature.properties)
+          feature.properties.candidates.cands.forEach((cand)=>{
+            popupContent+='<li>'
+            popupContent+= `${cand.candNo} 號 ${cand.name} 政黨:${cand.party}`
+            popupContent+='</li>'
+          })
+
+          popupContent+="</ul>"
 
           layer.bindPopup(popupContent).openPopup();
         });
