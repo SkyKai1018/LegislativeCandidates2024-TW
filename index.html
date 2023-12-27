@@ -16,24 +16,29 @@
     </style>
   </head>
   <body>
-    <script src="./data/ConstituencyInfo_GeoJson.js"></script>
+    <!-- <script src="./data/ConstituencyInfo_GeoJson.js"></script> -->
     <div id="map"></div>
 
     <script>
-      // const test = fetch('./data/ConstituencyInfo_GeoJson.json')
-      //     .then(response => {
-      //         if (!response.ok) {
-      //             throw new Error('Network response was not ok');
-      //         }
-      //         return response.json();
-      //     })
-      //     .then(data => {
-      //         // 在这里处理你的数据
-      //         console.log(data);
-      //     })
-      //     .catch(error => {
-      //         console.error('There has been a problem with your fetch operation:', error);
-      //     });
+      const ConstituencyInfo = fetch(
+        "https://raw.githubusercontent.com/SkyKai1018/LegislativeCandidates2024-TW/main/data/ConstituencyInfo_GeoJson.json"
+      )
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          // 在这里处理你的数据
+          console.log(data);
+        })
+        .catch((error) => {
+          console.error(
+            "There has been a problem with your fetch operation:",
+            error
+          );
+        });
     </script>
     <script>
       var map = L.map("map").setView([23.5, 121], 7);
@@ -42,11 +47,39 @@
         maxZoom: 19,
         attribution: "© OpenStreetMap contributors",
       }).addTo(map);
-      ConstituencyInfo.forEach((elem_Constituency) => {
-        L.geoJSON(elem_Constituency).addTo(map);
-      });
-    </script>
-    <script>
+
+      fetch(
+        "https://raw.githubusercontent.com/SkyKai1018/LegislativeCandidates2024-TW/main/data/ConstituencyInfo_GeoJson.json"
+      )
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          data.forEach((elem_Constituency) => {
+            L.geoJSON(elem_Constituency, {
+              style: function (feature) {
+                return {
+                  fillColor: "#00ff00",
+                  weight: 2,
+                  opacity: 1,
+                  color: "white",
+                  fillOpacity: 0.7,
+                };
+              },
+              onEachFeature: onEachFeature,
+            }).addTo(map);
+          });
+        })
+        .catch((error) => {
+          console.error(
+            "There has been a problem with your fetch operation:",
+            error
+          );
+        });
+
       function highlightFeature(e) {
         var layer = e.target;
 
@@ -80,40 +113,22 @@
           mouseout: resetHighlight,
         });
 
-        // 点击事件
         layer.on("click", function (e) {
-          // 这里您可以根据 'feature' 的属性自定义弹窗内容
           var popupContent = `<h2>${feature.properties.county} 第${feature.properties.constituency}選區</h2>`;
-          popupContent += '<h3>候選人</h3>'
-          popupContent +="<ul>"
-          console.log(feature.properties)
-          feature.properties.candidates.cands.forEach((cand)=>{
-            popupContent+='<li>'
-            popupContent+= `${cand.candNo} 號 ${cand.name} 政黨:${cand.party}`
-            popupContent+='</li>'
-          })
+          popupContent += "<h3>候選人</h3>";
+          popupContent += "<ul>";
+          console.log(feature.properties);
+          feature.properties.candidates.cands.forEach((cand) => {
+            popupContent += "<li>";
+            popupContent += `${cand.candNo} 號 ${cand.name} 政黨:${cand.party}`;
+            popupContent += "</li>";
+          });
 
-          popupContent+="</ul>"
+          popupContent += "</ul>";
 
           layer.bindPopup(popupContent).openPopup();
         });
       }
-
-
-      ConstituencyInfo.forEach((elem_Constituency) => {
-        L.geoJSON(elem_Constituency, {
-          style: function (feature) {
-            return {
-              fillColor: "#00ff00",
-              weight: 2,
-              opacity: 1,
-              color: "white",
-              fillOpacity: 0.7,
-            };
-          },
-          onEachFeature: onEachFeature,
-        }).addTo(map);
-      });
     </script>
   </body>
 </html>
