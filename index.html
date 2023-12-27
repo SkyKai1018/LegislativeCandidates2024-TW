@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>立委選區地圖</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <style>
+      #map {
+        height: 800px; /* 或其他希望的高度 */
+      }
+    </style>
+  </head>
+  <body>
+    <script src="./data/ConstituencyInfo_GeoJson.js"></script>
+    <div id="map"></div>
+
+    <script>
+      // const test = fetch('./data/ConstituencyInfo_GeoJson.json')
+      //     .then(response => {
+      //         if (!response.ok) {
+      //             throw new Error('Network response was not ok');
+      //         }
+      //         return response.json();
+      //     })
+      //     .then(data => {
+      //         // 在这里处理你的数据
+      //         console.log(data);
+      //     })
+      //     .catch(error => {
+      //         console.error('There has been a problem with your fetch operation:', error);
+      //     });
+    </script>
+    <script>
+      var map = L.map("map").setView([23.5, 121], 7);
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: "© OpenStreetMap contributors",
+      }).addTo(map);
+      ConstituencyInfo.forEach((elem_Constituency) => {
+        L.geoJSON(elem_Constituency).addTo(map);
+      });
+    </script>
+    <script>
+      function highlightFeature(e) {
+        var layer = e.target;
+
+        layer.setStyle({
+          weight: 5,
+          color: "#666",
+          dashArray: "",
+          fillOpacity: 0.7,
+          fillColor: "#ff7800",
+        });
+
+        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+          layer.bringToFront();
+        }
+      }
+
+      function resetHighlight(e) {
+        e.target.setStyle({
+          fillColor: "#00ff00",
+          weight: 2,
+          opacity: 1,
+          color: "white",
+          fillOpacity: 0.7,
+        });
+      }
+
+      function onEachFeature(feature, layer) {
+        //懸停
+        layer.on({
+          mouseover: highlightFeature,
+          mouseout: resetHighlight,
+        });
+
+        // 点击事件
+        layer.on("click", function (e) {
+          // 这里您可以根据 'feature' 的属性自定义弹窗内容
+          console.log(feature)
+          var popupContent = `<h3>${feature.properties.county} ${feature.properties.constituency}</h3>`;
+          if (feature.properties) {
+            popupContent += feature.properties.county; // 示例属性
+            popupContent += feature.properties.constituency; // 示例属性
+          }
+
+          layer.bindPopup(popupContent).openPopup();
+        });
+      }
+
+
+      ConstituencyInfo.forEach((elem_Constituency) => {
+        L.geoJSON(elem_Constituency, {
+          style: function (feature) {
+            return {
+              fillColor: "#00ff00",
+              weight: 2,
+              opacity: 1,
+              color: "white",
+              fillOpacity: 0.7,
+            };
+          },
+          onEachFeature: onEachFeature,
+        }).addTo(map);
+      });
+    </script>
+  </body>
+</html>
