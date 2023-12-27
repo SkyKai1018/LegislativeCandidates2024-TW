@@ -1,0 +1,16 @@
+{
+  "name": "legislativecandidates2024-tw",
+  "version": "1.0.0",
+  "description": "> 功能目前尚在實作中，完成後預計會提供以下功能",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@turf/turf": "^6.5.0",
+    "node.js": "^0.0.1-security"
+  }
+}
