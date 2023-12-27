@@ -39,6 +39,7 @@ function mergeGeoJSON(arr_geojson) {
 }
 
 let arr_Constituency_GeoJson = [];
+let mergedGeoJson = [];
 
 ConstituencyInfo.forEach((elem_Constituency) => {
   let County = elem_Constituency["區域"];
@@ -76,21 +77,26 @@ ConstituencyInfo.forEach((elem_Constituency) => {
     elem_CountyConstituency.geojson = [];
     elem_CountyConstituency["縣市"] = "";
     try {
-      let mergedGeoJson = [];
       arr_towns_json.forEach((elem_town_json) => {
-        mergedGeoJson.push(mergeGeoJSON(elem_town_json));
+        let geojson =mergeGeoJSON(elem_town_json)
+        Object.assign(geojson.properties, {
+          county: County,
+          constituency: elem_CountyConstituency.選區名,
+        })
+        mergedGeoJson.push(geojson);
       });
+
       elem_CountyConstituency.geojson = mergedGeoJson;
-      elem_CountyConstituency.縣市 = County;
+      
     } catch (error) {
-      console.log(error, County, elem_town_json, arr_towns_json);
+      console.log(error, County, arr_towns_json);
     }
-    arr_Constituency_GeoJson.push(elem_CountyConstituency);
-    console.log(elem_CountyConstituency);
+    arr_Constituency_GeoJson.push(mergedGeoJson);
+    console.log(elem_CountyConstituency.geojson);
   });
 });
 
-const jsonStr = JSON.stringify(arr_Constituency_GeoJson, null, 2);
+const jsonStr = JSON.stringify(mergedGeoJson, null, 2);
 
 fs.writeFile("ConstituencyInfo_GeoJson.json", jsonStr, "utf-8", (err) => {
   if (err) {
